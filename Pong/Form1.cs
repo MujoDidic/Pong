@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Windows.Forms;
 
 namespace Pong
@@ -41,8 +44,13 @@ namespace Pong
         int punkteMehr, punkteWeniger;
         //für die Veränderung des Winkels
         int winkelZufall;
-
-
+        //-----------------------------------------------------------//
+        //CSHP11D
+        //-----------------------------------------------------------//
+        // Diese Codezeile habe ich in der Methode "private void SpielfeldToolStripMenuItem_Click"
+        // gelöscht und hier initialisiert,
+        //sodass sie im gesamten Formular verwendet werden kann.
+        EinstellungenDialog neueWerte = new EinstellungenDialog();
         void SetzeSpielfeld()
         {
             spielfeldGroesse = spielfeld.ClientRectangle;
@@ -128,8 +136,25 @@ namespace Pong
             schlaeger.Width = spielfeldLinienbreite;
             schlaeger.Height = schlaegerGroesse;
             //beide Panels werden weiß
-            ball.BackColor = Color.White;
-            schlaeger.BackColor = Color.White;
+            //ball.BackColor = Color.White;
+            //schlaeger.BackColor = Color.White;
+            //-----------------------------------------------------------//
+            //CSHP11D
+            //-----------------------------------------------------------//
+            // Hier habe ich eine "if"-Schleife eingefügt,
+            // die kontrolliert, ob es eine neue Eingabe für die Farbe des Balls und des Schlägers gibt,
+            // oder das Programm mit der Standardfarbe fortgesetzt wird.
+            if (neueWerte.DialogResult == DialogResult.OK)
+            {
+                ball.BackColor = neueWerte.BallLinieSchlaegerFarbe;
+                schlaeger.BackColor = neueWerte.BallLinieSchlaegerFarbe;
+            }
+            else
+            {
+                ball.BackColor = Color.White;
+                schlaeger.BackColor = Color.White;
+            }
+            
             //den Schläger positionieren
             //links an den Rand
             schlaeger.Left = 2;
@@ -142,10 +167,34 @@ namespace Pong
         void ZeichneZeit(string restzeit)
         {
             //zuerst die alte Anzeige überschreiben
-            pinsel.Color = spielfeld.BackColor;
+            //pinsel.Color = spielfeld.BackColor;
+            //-----------------------------------------------------------//
+            //CSHP11D
+            //-----------------------------------------------------------//
+            //Hier wird die Verwendung der neuen Farbe fortgesetzt
+            if (neueWerte.DialogResult == DialogResult.OK)
+            {
+                pinsel.Color = neueWerte.SpielfeldFarbe; 
+            }
+            else
+            {
+                pinsel.Color = spielfeld.BackColor;
+            }
             zeichenflaeche.FillRectangle(pinsel, spielfeldMaxX - 50, spielfeldMinY + 20, 30, 20);
             //in weißer Schrift
-            pinsel.Color = Color.White;
+            //pinsel.Color = Color.White;
+            //-----------------------------------------------------------//
+            //CSHP11D
+            //-----------------------------------------------------------//
+            //Hier wird die Verwendung der neuen Farbe fortgesetzt.
+            if (neueWerte.DialogResult == DialogResult.OK)
+            {
+                pinsel.Color = neueWerte.BallLinieSchlaegerFarbe;
+            }
+            else
+            {
+                pinsel.Color = Color.White;
+            }
             //die Auszeichnungen für die Schrift werden beim Erstellen des Spielfelds gesetzt
             zeichenflaeche.DrawString(restzeit, schrift, pinsel, new Point(spielfeldMaxX - 50, spielfeldMinY + 20));
         }
@@ -153,10 +202,37 @@ namespace Pong
         void ZeichnePunkte(string punkte)
         {
             //zuerst die alte Anzeige überschreiben
-            pinsel.Color = spielfeld.BackColor;
+            //pinsel.Color = spielfeld.BackColor;
+            //-----------------------------------------------------------//
+            //CSHP11D
+            //-----------------------------------------------------------//
+            //Hier wird die Verwendung der neuen Farbe fortgesetzt.
+            if (neueWerte.DialogResult == DialogResult.OK)
+            {
+                pinsel.Color = neueWerte.SpielfeldFarbe;
+            }
+            else
+            {
+                pinsel.Color = spielfeld.BackColor;
+            }
+
             zeichenflaeche.FillRectangle(pinsel, spielfeldMaxX - 50, spielfeldMinY + 40, 30, 20);
             //in weißer Schrift
-            pinsel.Color = Color.White;
+            //pinsel.Color = Color.White;
+            //-----------------------------------------------------------//
+            //CSHP11D
+            //-----------------------------------------------------------//
+            //Hier wird die Verwendung der neuen Farbe fortgesetzt.
+            if (neueWerte.DialogResult == DialogResult.OK)
+            {
+                pinsel.Color = neueWerte.BallLinieSchlaegerFarbe;
+            }
+            else
+            {
+                pinsel.Color = Color.White;
+            }
+
+            
             //die Einstelungen für die Schrift werden beim Erstellen des Spielfelds gesetzt
             zeichenflaeche.DrawString(punkte, schrift, pinsel,
             new Point(spielfeldMaxX - 50, spielfeldMinY + 40));
@@ -170,7 +246,7 @@ namespace Pong
             if (MessageBox.Show("Neues Spiel starten?", "Neues Spiel", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 //die Spielzeit neu setzen
-                aktuelleSpielzeit = 120;
+                aktuelleSpielzeit = 30;
                 //alles neu zeichnen
                 ZeichneSpielfeld();
                 NeuerBall();
@@ -214,7 +290,6 @@ namespace Pong
             zeichenflaeche = spielfeld.CreateGraphics();
             //das Spielfeld bekommt einen schwarzen Hintergrund
             spielfeld.BackColor = Color.Black;
-            //die Grenzen für das Spielfeld setzen
             SetzeSpielfeld();
             //einen neuen Ball erstellen
             NeuerBall();
@@ -400,11 +475,21 @@ namespace Pong
         private void SpielfeldToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Point neueGroesse = new Point(0, 0);
-            EinstellungenDialog neueWerte = new EinstellungenDialog();
+
+            //EinstellungenDialog neueWerte = new EinstellungenDialog();
+
             //wenn der Dialog über die "OK"-Schaltfläche beendet wird
             if (neueWerte.ShowDialog() == DialogResult.OK)
             {
-                //die neue Größe holen
+                //-----------------------------------------------------------//
+                //CSHP11D
+                //-----------------------------------------------------------//
+               // Wenn der 'Übernahme' - Button geklickt wird,
+               // aktualisiert er die 'BackColor' der Paneele für Ball, Schläger und Spielfeld. 
+                spielfeld.BackColor = neueWerte.SpielfeldFarbe;
+                ball.BackColor = neueWerte.BallLinieSchlaegerFarbe;
+                schlaeger.BackColor = neueWerte.BallLinieSchlaegerFarbe;
+
                 neueGroesse = neueWerte.LiefereWert();
                 //den Dialog wieder schließen
                 neueWerte.Close();
@@ -419,7 +504,11 @@ namespace Pong
                 //das Spielfeld neu setzen
                 SetzeSpielfeld();
                 //Spielfeld löschen
-                zeichenflaeche.Clear(spielfeld.BackColor);
+                //zeichenflaeche.Clear(spielfeld.BackColor);
+                //-----------------------------------------------------------//
+                //CSHP11D
+                //-----------------------------------------------------------//
+                zeichenflaeche.Clear(neueWerte.SpielfeldFarbe);
                 //und einen neuen Ball und einen neuen Schläger zeichnen
                 NeuerBall();
             }
@@ -435,6 +524,7 @@ namespace Pong
             //nachsehen, ob ein neuer Eintrag in der Bestenliste erfolgen kann
             if (spielpunkte.NeuerEintrag() == true)
             {
+                
                 //Ball und Schläger verstecken
                 ball.Hide();
                 schlaeger.Hide();

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace Pong
 {
     public partial class EinstellungenDialog : Form
     {
+
         //die Methode liefert den ausgewählten Wert
         public Point LiefereWert()
         {
@@ -30,5 +33,42 @@ namespace Pong
         {
             Close();
         }
+
+
+        //-----------------------------------------------------------//
+        //CSHP11D
+        //-----------------------------------------------------------//
+        // Die Eigenschaften 'SpielfeldFarbe' und 'BallLinieSchlaegerFarbe' dienen dazu,
+        // die Farben für das Spielfeld und die Linien des Balls und Schlägers zu speichern.
+        public Color SpielfeldFarbe { get; set; }
+        public Color BallLinieSchlaegerFarbe { get; set; }
+        
+        private void ButtonBallSclaegerLinie_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog();
+            BallLinieSchlaegerFarbe = colorDialog1.Color;
+
+            VorLiniePanel.Refresh();
+            VorLiniePanel.BackColor = BallLinieSchlaegerFarbe;
+
+            VorSchalegerPanel.Refresh();
+            VorSchalegerPanel.BackColor = BallLinieSchlaegerFarbe;
+
+            VorBallPanel.Refresh();
+            VorBallPanel.BackColor = BallLinieSchlaegerFarbe;
+
+        }
+
+
+        private void ButtonSpielfeld_Click(object sender, EventArgs e)
+        {
+            colorDialog2.ShowDialog();
+            SpielfeldFarbe = colorDialog2.Color;
+
+            VorSpielfeldPanel.Refresh();
+            VorSpielfeldPanel.BackColor = SpielfeldFarbe;
+
+        }    
+        
     }
 }
